@@ -64,44 +64,7 @@ class LoaderManager(private val configFile: ConfigFile, private val internetMana
         } while (shouldRestart)
     }
 
-    private fun checkEULA(basepath: String) {
-        try {
-            val eulaFile = File(basepath + "eula.txt")
 
-
-            val lines: MutableList<String>
-            if (eulaFile.exists()) {
-                lines = FileUtils.readLines(eulaFile, "utf-8")
-            } else {
-                lines = ArrayList()
-                Collections.addAll(lines,
-                        "#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://account.mojang.com/documents/minecraft_eula).",
-                        "#" + ZonedDateTime.now().format(DateTimeFormatter.ofPattern("E MMM d HH:mm:ss O y", Locale.ENGLISH)),
-                        "eula=false")
-            }
-
-
-            if (lines.size > 2 && !lines[2].contains("true")) {
-                Scanner(System.`in`, "utf-8").use { scanner ->
-
-                    LOGGER.info(ansi().fgCyan().a("You have not accepted the eula yet."))
-                    LOGGER.info(ansi().fgCyan().a("By typing TRUE you are indicating your agreement to the EULA of Mojang."))
-                    LOGGER.info(ansi().fgCyan().a("Read it at https://account.mojang.com/documents/minecraft_eula before accepting it."))
-
-                    val answer = scanner.nextLine()
-                    if (answer.trim().equals("true", ignoreCase = true)) {
-                        LOGGER.info("You have accepted the EULA.")
-                        lines[2] = "eula=true\n"
-                        FileUtils.writeLines(eulaFile, lines)
-                    }
-                }
-            }
-
-        } catch (e: IOException) {
-            LOGGER.error("Error while checking EULA", e)
-        }
-
-    }
 
     fun installLoader(basePath: String, loaderVersion: String, mcVersion: String): Boolean {
         // val versionString = "$mcVersion-$forgeVersion"
